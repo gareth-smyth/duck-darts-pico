@@ -4,7 +4,7 @@
   "description": "Web service for a raspberry pi pico connected to a soft-tip darts board to broadcast scores.",
   "scripts": {
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest --coverage",
-    "lint": "npx eslint ./src/",
+    "lint": "npx eslint ./",
     "load": "kaluma flash --bundle ./src/index.js --shell -o ./dist/duck-darts.js --sourcemap",
     "load-prod": "kaluma flash --bundle ./src/index.js --shell -o ./dist/duck-darts.min.js --minify"
   },

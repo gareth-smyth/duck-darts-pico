@@ -2,7 +2,7 @@ module.exports = {
   env: {
     node: true,
     es2021: true,
-    jest: true,
+    jest: true
   },
   extends: 'standard',
   overrides: [
@@ -18,10 +18,11 @@ module.exports = {
       }
     }
   ],
+  ignorePatterns: ['coverage', 'dist', 'node_modules'],
   parserOptions: {
     ecmaVersion: 'latest'
   },
   rules: {
-    semi: [2, "always"]
+    semi: [2, 'always']
   }
-}
+};
