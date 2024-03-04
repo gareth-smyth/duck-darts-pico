@@ -1,0 +1,24 @@
+{
+  "name": "duck-darts-pico",
+  "version": "0.0.1",
+  "description": "Web service for a raspberry pi pico connected to a soft-tip darts board to broadcast scores.",
+  "scripts": {
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest --coverage",
+    "lint": "npx eslint ./src/",
+    "load": "kaluma flash --bundle ./src/index.js --shell -o ./dist/duck-darts.js --sourcemap",
+    "load-prod": "kaluma flash --bundle ./src/index.js --shell -o ./dist/duck-darts.min.js --minify"
+  },
+  "author": "Gareth Smyth",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "js-sha1": "^0.7.0"
+  }
+}
