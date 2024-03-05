@@ -7,6 +7,7 @@ class WebSocket {
     this.socket.on('data', (data) => {
       console.log('Got data');
       const frame = new Frame(data);
+      console.log(JSON.stringify(frame, null, 2));
     });
 
     this.socket.on('end', () => {
@@ -16,6 +17,10 @@ class WebSocket {
     this.socket.on('error', (err) => {
       console.log('client error', err);
     });
+  }
+
+  close () {
+    this.socket.close();
   }
 }
 
