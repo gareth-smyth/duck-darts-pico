@@ -17,6 +17,11 @@ wifi.connect({}, async (err) => {
     console.error('WiFi error:', err);
   } else {
     console.log('Wifi Started.');
-    await WebSocketServer.CreateServer(8124);
+    WebSocketServer.CreateServer(8124).then((webSocketServer) => {
+      webSocketServer.onMessageReceived((message) => {
+        console.log('Message received: ', message);
+        webSocketServer.sendMessage('Hello back!');
+      });
+    });
   }
 });

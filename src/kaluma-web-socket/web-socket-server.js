@@ -1,16 +1,17 @@
 const http = require('http');
 const { sha1 } = require('js-sha1');
-const WebSocket = require('./web-socket');
+const WebSocketConnection = require('./web-socket-connection');
 
 class WebSocketServer {
   constructor () {
     this.connections = [];
+    this.messageReceivedHanlders = [];
   }
 
   static async CreateServer (port) {
     console.log('Creating WebSocket server');
     const webSocketServer = new WebSocketServer();
-    webSocketServer.server = http.createServer((req, res) => webSocketServer.requestHandler(req, res, webSocketServer));
+    webSocketServer.server = http.createServer((req, res) => webSocketServer._requestHandler(req, res, webSocketServer));
     console.log('Created HTTP server');
     return new Promise((resolve, reject) => {
       webSocketServer.server.listen(port, () => {
@@ -38,7 +39,23 @@ class WebSocketServer {
     });
   }
 
-  requestHandler (req, res, webSocketServer) {
+  onMessageReceived (messageHandler) {
+    this.messageReceivedHanlders.push(messageHandler);
+  }
+
+  handleMessage (message) {
+    this.messageReceivedHanlders.forEach(messageHandler => {
+      messageHandler(message);
+    });
+  }
+
+  sendMessage (message) {
+    this.connections.forEach((connection) => {
+      connection.sendMessage(message);
+    });
+  }
+
+  _requestHandler (req, res, webSocketServer) {
     console.log('Received request');
 
     const upgradeHeader = req.headers.upgrade;
@@ -55,6 +72,7 @@ class WebSocketServer {
         console.log('Received bad key');
         res.writeHead(400, 'Bad Request');
         res.end();
+        return;
       }
 
       console.log('Upgrading connection');
@@ -62,7 +80,7 @@ class WebSocketServer {
       const sha = sha1.digest(keySource);
       const digest = btoa(String.fromCharCode.apply(null, sha));
 
-      webSocketServer.connections.push(new WebSocket(req.socket));
+      webSocketServer.connections.push(new WebSocketConnection(req.socket, webSocketServer));
 
       res.writeHead(101, 'Switching Protocols', {
         Upgrade: 'websocket',

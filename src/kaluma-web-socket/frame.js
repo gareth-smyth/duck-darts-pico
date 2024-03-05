@@ -83,14 +83,13 @@ class Frame {
     } else if (this.payloadLength === 127) {
       fullLength += 8;
     }
+    const buffer = new Uint8Array(fullLength);
 
-    const buffer = Buffer.alloc(fullLength);
+    buffer[0] = this.fin << 7;
+    buffer[0] = buffer[0] | this.opCode;
 
-    buffer[0] = this.fin << 8;
-    buffer[0] = buffer[0] & this.opCode;
-
-    buffer[1] = this.mask << 8;
-    buffer[1] = buffer[1] & this.payloadLength;
+    buffer[1] = this.mask << 7;
+    buffer[1] = buffer[1] | this.payloadLength;
 
     let nextByte = 2;
     if (this.payloadLength === 126) {
@@ -119,7 +118,7 @@ class Frame {
       nextByte += 4;
     }
 
-    this.payLoadData.copy(buffer, nextByte);
+    buffer.set(this.payLoadData, nextByte);
 
     return buffer;
   }
@@ -154,6 +153,20 @@ class Frame {
     newFrame.opCode = 0xA;
     newFrame.payloadLength = data.length;
     newFrame.payLoadData = data;
+
+    return newFrame;
+  }
+
+  static buildText (data) {
+    if (data.length > 125) {
+      throw Error('Extended payloads are not supported yet.');
+    }
+
+    const newFrame = new Frame();
+    newFrame.fin = true;
+    newFrame.opCode = 0x1;
+    newFrame.payloadLength = data.length;
+    newFrame.payLoadData = new TextEncoder().encode(data);
 
     return newFrame;
   }
