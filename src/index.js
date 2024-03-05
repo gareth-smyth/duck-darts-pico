@@ -28,6 +28,8 @@ wifi.connect({}, (err) => {
 
       const webSocket = new WebSocket(req.socket);
 
+      console.log(req.headers);
+
       const keySource = req.headers['sec-websocket-key'] + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
       const sha = sha1.digest(keySource);
       const digest = btoa(String.fromCharCode.apply(null, sha));
