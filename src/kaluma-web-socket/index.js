@@ -1,3 +1,3 @@
-const WebSocket = require('./web-socket');
+const WebSocketServer = require('./web-socket-server');
 
-module.exports = WebSocket;
+module.exports = WebSocketServer;

@@ -8,17 +8,22 @@ class WebSocketServer {
   }
 
   static async CreateServer (port) {
+    console.log('Creating WebSocket server');
     const webSocketServer = new WebSocketServer();
     webSocketServer.server = http.createServer((req, res) => webSocketServer.requestHandler(req, res, webSocketServer));
+    console.log('Created HTTP server');
     return new Promise((resolve, reject) => {
       webSocketServer.server.listen(port, () => {
+        console.log(`Listening on port ${port}`);
         resolve(webSocketServer);
       });
 
       webSocketServer.server.on('error', /* istanbul ignore next  */ (e) => {
-        console.log(e);
+        console.error(e);
         reject(e);
       });
+    }).catch((e) => {
+      console.error(e);
     });
   }
 
@@ -34,20 +39,25 @@ class WebSocketServer {
   }
 
   requestHandler (req, res, webSocketServer) {
+    console.log('Received request');
+
     const upgradeHeader = req.headers.upgrade;
     const connectionHeader = req.headers.connection;
     const keyHeader = req.headers['sec-websocket-key'];
 
     if (upgradeHeader !== 'websocket' || connectionHeader !== 'Upgrade') {
+      console.log('Received non-upgrade request');
       res.writeHead(404, 'Not Found');
       res.end();
     } else {
       const cleanKeyHeader = keyHeader && keyHeader.trim();
       if (!cleanKeyHeader || cleanKeyHeader.length !== 24) {
+        console.log('Received bad key');
         res.writeHead(400, 'Bad Request');
         res.end();
       }
 
+      console.log('Upgrading connection');
       const keySource = cleanKeyHeader + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
       const sha = sha1.digest(keySource);
       const digest = btoa(String.fromCharCode.apply(null, sha));
@@ -60,6 +70,8 @@ class WebSocketServer {
         'Sec-WebSocket-Accept': digest
       });
       res.flushHeaders();
+
+      console.log('Responded with protocol switch');
     }
   }
 }
